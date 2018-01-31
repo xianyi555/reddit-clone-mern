@@ -13,9 +13,6 @@ app.use(function(req, res, next) {
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({
-//   extended: true
-// }));
 
 // conld copy-paste contents of this file into server.js, using app.get, app.post, app.put, app.delete, etc.
 app.use(redditRouter);

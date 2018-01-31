@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class HomePage extends Component {
   constructor() {
@@ -10,11 +11,11 @@ class HomePage extends Component {
   		newPostThumbnail: '',
   	};
 
-	this.createPost = this.createPost.bind(this);
-	this.updatePostTitle = this.updatePostTitle.bind(this);
-	this.updatePostContent = this.updatePostContent.bind(this);
-	this.updatePostThumbnail = this.updatePostThumbnail.bind(this);
-
+		this.createPost = this.createPost.bind(this);
+		this.updatePostTitle = this.updatePostTitle.bind(this);
+		this.updatePostContent = this.updatePostContent.bind(this);
+		this.updatePostThumbnail = this.updatePostThumbnail.bind(this);
+		this.deletePost = this.deletePost.bind(this);
   }
 
   componentDidMount() {
@@ -26,11 +27,26 @@ class HomePage extends Component {
   			allMyPosts: json
   		})
   		//do stuff tiwh the JSON you get back here
-  		console.log(json);
-  		console.log(this.state.newPostTitle)
+  		//console.log(json);
+  		//console.log(this.state.newPostTitle)
   		// STEP 2: set state to this json response you got back
   	});
   }
+
+  	deletePost(post_id) {
+ 		fetch(`http://localhost:8080/api/posts/${ post_id }`, {  
+ 		  method: 'DELETE',
+ 		  headers: {
+ 		    'Accept': 'application/json',
+ 		    'Content-Type': 'application/json',
+ 		  }
+ 		}).then((res) => {
+ 			this.setState({
+ 				allMyPosts: this.state.allMyPosts.filter(post => post._id !== post_id)
+ 			});
+ 		});
+ 	}
+ 
 
 	updatePostTitle(e) {
 		this.setState({ newPostTitle: e.target.value })
@@ -46,13 +62,13 @@ class HomePage extends Component {
 
   createPost(e) {
   	e.preventDefault();
-  	console.log(this.state.newPostTitle, this.state.newPostContent, this.state.newPostThumbnail);
+
 
 		fetch('http://localhost:8080/api/posts', {
 				method: 'POST',	
-				header: {
+				headers: {
 					'Accept': 'application/json',
-					'Content-Type': 'application/json',
+					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 				  title: this.state.newPostTitle, 
@@ -62,15 +78,14 @@ class HomePage extends Component {
 				  comments: [] 
 				})
 			}).then((res) => {
-			    return res.json();
+			  return res.json();
 			}).then((json) => {
-				console.log(json);
-			    this.setState({
-			    	allMyPosts: this.state.allMyPosts.concat(json),
-			    	newPostTitle: '',
-			    	newPostContent: '',
-			    	newPostThumbnail: ''
-			    });
+		    this.setState({
+		    	allMyPosts: this.state.allMyPosts.concat(json),
+		    	newPostTitle: '',
+		    	newPostContent: '',
+		    	newPostThumbnail: ''
+		    });
 			});
   }
 
@@ -105,7 +120,9 @@ class HomePage extends Component {
 	      { this.state.allMyPosts.map(eachPost => {
 	      	return <li key={ eachPost._id }>
 	      		   <img height="30" width="30" src={eachPost.thumbnail_image_url}/>
-					{ eachPost.title }
+			       <Link to={ `/posts/${eachPost._id}` }> <h2> { eachPost.title } </h2> </Link>
+		    	   <button onClick={ () => { this.deletePost(eachPost._id) } }>X</button>
+
 	      	</li>
 	      })}
       </div>

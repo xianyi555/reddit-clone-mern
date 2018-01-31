@@ -56,7 +56,7 @@ function destroy(req, res) {
        });
      }
    });
- }
+}
  
 module.exports.create = create;
 module.exports.update = update;
